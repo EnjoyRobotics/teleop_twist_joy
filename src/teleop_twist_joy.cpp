@@ -148,8 +148,7 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions & options)
     pimpl_->enable_turbo_button >= 0, "TeleopTwistJoy",
     "Turbo on button %" PRId64 ".", pimpl_->enable_turbo_button);
   ROS_INFO_COND_NAMED(
-    1, "TeleopTwistJoy",
-    "Teleop enable inverted reverse %d.", pimpl_->inverted_reverse);
+    pimpl_->inverted_reverse, "TeleopTwistJoy", "%s", "Teleop enable inverted reverse.");
 
   for (std::map<std::string, int64_t>::iterator it = pimpl_->axis_linear_map.begin();
     it != pimpl_->axis_linear_map.end(); ++it)

@@ -65,7 +65,7 @@ The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` 
   - `scale_angular_turbo.roll (double, default: 0.0)`
 
 - `inverted_reverse (bool, default: false)`
-  - Whether to invert turning left-rigth while reversing (useful for differential wheeled robots).
+  - Whether to invert turning left-right while reversing (useful for differential wheeled robots).
 
 
 

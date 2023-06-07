@@ -60,7 +60,7 @@ struct TeleopTwistJoy::Impl
   int64_t enable_button;
   int64_t enable_turbo_button;
 
-  bool inverse_reverse;
+  bool inverted_reverse;
 
   std::map<std::string, int64_t> axis_linear_map;
   std::map<std::string, std::map<std::string, double>> scale_linear_map;
@@ -88,7 +88,7 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
 
   pimpl_->enable_turbo_button = this->declare_parameter("enable_turbo_button", -1);
 
-  pimpl_->inverse_reverse = this->declare_parameter("inverse_reverse", false);
+  pimpl_->inverted_reverse = this->declare_parameter("inverted_reverse", false);
 
   std::map<std::string, int64_t> default_linear_map{
     {"x", 5L},
@@ -143,7 +143,7 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
   ROS_INFO_COND_NAMED(pimpl_->enable_turbo_button >= 0, "TeleopTwistJoy",
     "Turbo on button %" PRId64 ".", pimpl_->enable_turbo_button);
   ROS_INFO_COND_NAMED(1, "TeleopTwistJoy",
-      "Teleop enable inverse reverse %d.", pimpl_->inverse_reverse);
+      "Teleop enable inverted reverse %d.", pimpl_->inverted_reverse);
 
   for (std::map<std::string, int64_t>::iterator it = pimpl_->axis_linear_map.begin();
        it != pimpl_->axis_linear_map.end(); ++it)
@@ -175,7 +175,7 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
                                                  "scale_linear_turbo.x", "scale_linear_turbo.y", "scale_linear_turbo.z",
                                                  "scale_angular.yaw", "scale_angular.pitch", "scale_angular.roll",
                                                  "scale_angular_turbo.yaw", "scale_angular_turbo.pitch", "scale_angular_turbo.roll"};
-    static std::set<std::string> boolparams = {"require_enable_button", "inverse_reverse"};
+    static std::set<std::string> boolparams = {"require_enable_button", "inverted_reverse"};
     auto result = rcl_interfaces::msg::SetParametersResult();
     result.successful = true;
 
@@ -221,9 +221,9 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
       {
         this->pimpl_->require_enable_button = parameter.get_value<rclcpp::PARAMETER_BOOL>();
       }
-      if (parameter.get_name() == "inverse_reverse")
+      if (parameter.get_name() == "inverted_reverse")
       {
-        this->pimpl_->inverse_reverse = parameter.get_value<rclcpp::PARAMETER_BOOL>();
+        this->pimpl_->inverted_reverse = parameter.get_value<rclcpp::PARAMETER_BOOL>();
       }
       if (parameter.get_name() == "enable_button")
       {
@@ -343,7 +343,7 @@ void TeleopTwistJoy::Impl::sendCmdVelMsg(const sensor_msgs::msg::Joy::SharedPtr 
   cmd_vel_msg->linear.x = lin_x;
   cmd_vel_msg->linear.y = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "y");
   cmd_vel_msg->linear.z = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "z");
-  cmd_vel_msg->angular.z = (lin_x < 0.0 && inverse_reverse) ? -ang_z : ang_z;
+  cmd_vel_msg->angular.z = (lin_x < 0.0 && inverted_reverse) ? -ang_z : ang_z;
   cmd_vel_msg->angular.y = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "pitch");
   cmd_vel_msg->angular.x = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "roll");
 
